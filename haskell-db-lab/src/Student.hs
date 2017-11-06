@@ -9,6 +9,7 @@ type Id = Integer
 type Name = String
 type Surname = String
 
+-- | adds row to Student table
 createStudent :: IConnection a => Name -> Surname -> Id -> a -> IO Bool
 createStudent name surname sectionId conn =
     withTransaction conn (createStudent' name surname sectionId)
@@ -20,6 +21,7 @@ createStudent' name surname sectionId conn = do
         query = "insert into sport_univ_student (name, surname, sectionId)" ++
             " values (?, ?, ?)"
 
+-- | return row in Student by id
 readStudent :: IConnection a => a -> Id -> IO [(Id, Name, Surname, Id)]
 readStudent conn id = do
   query_result <- quickQuery' conn query [SqlInteger id]
@@ -30,7 +32,7 @@ readStudent conn id = do
         (uid, BS.unpack name, BS.unpack surname, sid)
       unpack x = error $ "Unexpected result: " ++ show x
 
-
+-- | return all rows in Student
 readAllStudents :: IConnection a => a -> IO [(Id, Name, Surname, Id)]
 readAllStudents conn = do
   query_result <- quickQuery' conn query []
@@ -41,6 +43,7 @@ readAllStudents conn = do
        (uid, BS.unpack name, BS.unpack surname, sid)
     unpack x = error $ "Unexpected result: " ++ show x
 
+-- | update row in Student by id
 updateStudent :: IConnection a => Id -> Name -> Surname -> Id -> a -> IO Bool
 updateStudent uid name surname sid conn =
     withTransaction conn (updateStudent' uid name surname sid)

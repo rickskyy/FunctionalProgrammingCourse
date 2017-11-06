@@ -8,6 +8,7 @@ import qualified Data.ByteString.Char8 as BS
 type Id = Integer
 type Name = String
 
+-- | adds row to Sections table
 createSection :: IConnection a => Name -> Id -> a -> IO Bool
 createSection name tid conn =
     withTransaction conn (createSection' name tid)
@@ -19,7 +20,7 @@ createSection' name tid conn = do
         query = "insert into sport_univ_section (name, teacherId) " ++
             " values (?, ?)"
 
-
+-- | return row in Sections by id
 readSection :: IConnection a => a -> Id -> IO [(Id, Name, Id)]
 readSection conn id = do
   result <- quickQuery' conn query [SqlInteger id]
@@ -30,7 +31,7 @@ readSection conn id = do
         (uid, BS.unpack name, tid)
       unpack x = error $ "Unexpected result: " ++ show x
 
-
+-- | return all rows in Sections
 readAllSections :: IConnection a => a -> IO [(Id, Name, Id)]
 readAllSections conn = do
   result <- quickQuery' conn query []
@@ -41,6 +42,7 @@ readAllSections conn = do
        (uid, BS.unpack name, tid)
     unpack x = error $ "Unexpected result: " ++ show x
 
+-- | update row in Sections by id
 updateSection :: IConnection a => Id -> Name -> Id -> a -> IO Bool
 updateSection uid name tid conn =
     withTransaction conn (updateSection' uid name tid)

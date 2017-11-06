@@ -15,6 +15,7 @@ type DBTime = TimeOfDay
 parseTime' :: String -> TimeOfDay
 parseTime' dateStr = parseTimeOrError True defaultTimeLocale "%H:%M:%S" "10:00:00" :: TimeOfDay
 
+-- | adds row to Schedule table
 createSchedule :: IConnection a => Id -> SDay -> STime -> STime -> a -> IO Bool
 createSchedule secId day beg end conn =
     withTransaction conn (createSchedule' secId day beg end)
@@ -26,6 +27,7 @@ createSchedule' secId day beg end conn = do
         query = "insert into sport_univ_schedule (sectionId, beginday, begintime, endtime)" ++
             " values (?, ?, ?, ?)"
 
+-- | return row in Schedule by id
 readSchedule :: IConnection a => a -> Id -> IO [(Id, Id, SDay, DBTime, DBTime)]
 readSchedule conn id = do
   query_result <- quickQuery' conn query [SqlInteger id]
@@ -36,7 +38,7 @@ readSchedule conn id = do
         (uid, secId, BS.unpack day, beg, end)
       unpack x = error $ "Unexpected result: " ++ show x
 
-
+-- | return all rows in Schedule
 readAllSchedule :: IConnection a => a -> IO [(Id, Id, SDay, DBTime, DBTime)]
 readAllSchedule conn = do
   query_result <- quickQuery' conn query []
@@ -47,6 +49,7 @@ readAllSchedule conn = do
        (uid, secId, BS.unpack day, beg, end)
     unpack x = error $ "Unexpected result: " ++ show x
 
+-- | update row in Schedule by id
 updateSchedule :: IConnection a => Id -> Id -> SDay -> STime -> STime -> a -> IO Bool
 updateSchedule uid secId day beg end conn =
     withTransaction conn (updateSchedule' uid secId day beg end)
