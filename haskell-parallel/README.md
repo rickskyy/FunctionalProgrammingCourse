@@ -1,6 +1,6 @@
 # haskell-parallel
 
-Threre are parallel and seqentional implementations of Floyd Warshall algorithm.
+There are parallel and sequential implementations of Floyd Warshall algorithm.
 
 To compile parallel version run: <br/>
 `ghc -O2 fwsparse_threaded.hs -threaded`
