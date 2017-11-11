@@ -4,7 +4,6 @@ version:             0.1.0.0
 -- description:
 homepage:            https://github.com/rickskyy/FunctionalProgrammingCourse/haskell-db-lab/
 license:             MIT
-license-file:        LICENSE
 author:              Yaroslav Shalivskyy
 maintainer:          yaroslav@shalivsky.com
 copyright:           2017 Yaroslav Shalivskyy
@@ -26,4 +25,6 @@ executable haskell-db-lab
   other-modules:       Schedule,
                        Teacher,
                        Student,
-                       Section
+                       Section,
+                       Competition,
+                       ConsoleInterface

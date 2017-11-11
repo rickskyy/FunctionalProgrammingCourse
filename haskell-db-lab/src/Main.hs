@@ -3,74 +3,65 @@ module Main where
 import Control.Exception
 import Database.HDBC
 import Database.HDBC.PostgreSQL (connectPostgreSQL)
+import Data.Time
+
 import Student
 import Teacher
 import Section
 import Schedule
+import Competition
+import ConsoleInterface
 
--- Example commands
+handleInput :: IConnection a => a -> IO()
+handleInput conn = do
+    putStrLn "Choose the model: "
+    model <- getLine
+    putStrLn "Choose the operation: "
+    operation <- getLine
+    let action = (model, operation)
+    case action of ("Student", "list") -> listStudentsFromInput conn
+                   ("Student", "create") -> createStudentFromInput conn
+                   ("Student", "read") -> readStudentFromInput conn
+                   ("Student", "update") -> updateStudentFromInput conn
+                   ("Student", "delete") -> deleteStudentFromInput conn
 
-manageStudents :: IConnection a => a -> IO ()
-manageStudents c = do
-    putStrLn "Manage Students"
+                   ("Teacher", "list") -> listTeachersFromInput conn
+                   ("Teacher", "create") -> createTeacherFromInput conn
+                   ("Teacher", "read") -> readTeacherFromInput conn
+                   ("Teacher", "update") -> updateTeacherFromInput conn
+                   ("Teacher", "delete") -> deleteTeacherFromInput conn
 
-    result <- readAllStudents c
-    putStrLn $ show result
-    result1 <- createStudent "Don" "Huan" 2 c
-    putStrLn $ show result1
-    result <- updateStudent 3 "Brian" "Sailman" 2 c
-    putStrLn $ show result
-    result <- readStudent c 3
-    putStrLn $ show result
+                   ("Section", "list") -> listSectionsFromInput conn
+                   ("Section", "create") -> createSectionFromInput conn
+                   ("Section", "read") -> readSectionFromInput conn
+                   ("Section", "update") -> updateSectionFromInput conn
+                   ("Section", "delete") -> deleteSectionFromInput conn
 
-manageTeachers :: IConnection a => a -> IO ()
-manageTeachers c = do
-    putStrLn "Manage Teachers"
+                   ("Schedule", "list") -> listScheduleFromInput conn
+                   ("Schedule", "create") -> createScheduleFromInput conn
+                   ("Schedule", "read") -> readScheduleFromInput conn
+                   ("Schedule", "update") -> updateScheduleFromInput conn
+                   ("Schedule", "delete") -> deleteScheduleFromInput conn
 
-    result <- readAllTeachers c
-    putStrLn $ show result
-    result <- createTeacher "Kyle" "Superuser" c
-    putStrLn $ show result
-    result <- updateTeacher 3 "Mister" "Steel" c
-    putStrLn $ show result
-    result <- readTeacher c 3
-    putStrLn $ show result
+                   ("Competition", "list") -> listCompetitionsFromInput conn
+                   ("Competition", "create") -> createCompetitionFromInput conn
+                   ("Competition", "read") -> readCompetitionFromInput conn
+                   ("Competition", "update") -> updateCompetitionFromInput conn
+                   ("Competition", "delete") -> deleteCompetitionFromInput conn
+                   ("Competition", "winners") -> listCompetitionsWinnersFromInput conn
+                   (_,_) -> putStrLn "Wrong params"
 
-manageSections :: IConnection a => a -> IO ()
-manageSections c = do
-    putStrLn "Manage Sections"
-
-    result <- readAllSections c
-    putStrLn $ show result
-    result <- createSection "Run" 2 c
-    putStrLn $ show result
-    result <- updateSection 3 "Athletics" 2 c
-    putStrLn $ show result
-    result <- readSection c 3
-    putStrLn $ show result
-
-manageSchedule :: IConnection a => a -> IO ()
-manageSchedule c = do
-    putStrLn "Manage Schedule"
-
-    result <- readAllSchedule c
-    putStrLn $ show result
-    result <- createSchedule 1 "Fd" "14:00:00" "16:00:00" c
-    putStrLn $ show result
-    result <- updateSchedule 1 1 "Mon" "16:00:00" "18:30:00" c
-    putStrLn $ show result
-    result <- readSchedule c 1
-    putStrLn $ show result
+    putStrLn "exit(y/n)"
+    isExit <- getLine
+    case isExit of "n" -> handleInput conn
 
 
+main :: IO ()
 main = do
-    c <- connectPostgreSQL "host=localhost dbname=sport_univ_db user=postgres password=root"
+    conn <- connectPostgreSQL "host=localhost dbname=sport_univ_db user=postgres password=root"
 
-    manageStudents c
-    manageTeachers c
-    manageSections c
-    manageSchedule c
+    putStrLn "Available operations: get, list, create, update, delete"
+    putStrLn "Available models: Student, Teacher, Section, Schedule, Competition"
+    putStrLn "exit - close the app"
 
-    commit c
-    disconnect c
-    return ()
+    handleInput conn

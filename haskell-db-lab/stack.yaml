@@ -2,6 +2,8 @@ flags: {}
 extra-package-dbs: []
 packages:
 - .
-extra-deps:
-- HDBC-postgresql-2.3.2.5
+extra-deps: [
+HDBC-2.4.0.2,
+HDBC-postgresql-2.3.2.5,
+]
 resolver: lts-9.8

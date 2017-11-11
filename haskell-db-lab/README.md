@@ -9,7 +9,7 @@ Supported working with such DB tables:
 - Schedule
 - Competition
 
-Implemented functions: read, readAll, create, update.
+Implemented functions: read, list, create, update, delete.
 
 For more details about entities see the src/mock_db_script.sql file.
 

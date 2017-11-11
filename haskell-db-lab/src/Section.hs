@@ -8,6 +8,8 @@ import qualified Data.ByteString.Char8 as BS
 type Id = Integer
 type Name = String
 
+data Section = Section {id :: Integer, name :: String, teacherId :: Integer} deriving (Show)
+
 -- | adds row to Sections table
 createSection :: IConnection a => Name -> Id -> a -> IO Bool
 createSection name tid conn =
@@ -21,25 +23,25 @@ createSection' name tid conn = do
             " values (?, ?)"
 
 -- | return row in Sections by id
-readSection :: IConnection a => a -> Id -> IO [(Id, Name, Id)]
-readSection conn id = do
+readSection :: IConnection a => Id -> a -> IO [Section]
+readSection id conn= do
   result <- quickQuery' conn query [SqlInteger id]
   return $ map unpack result
   where
       query = "select * from sport_univ_section where id = ?"
       unpack [SqlInteger uid, SqlByteString name, SqlInteger tid] =
-        (uid, BS.unpack name, tid)
+        Section uid (BS.unpack name) tid
       unpack x = error $ "Unexpected result: " ++ show x
 
 -- | return all rows in Sections
-readAllSections :: IConnection a => a -> IO [(Id, Name, Id)]
+readAllSections :: IConnection a => a -> IO [Section]
 readAllSections conn = do
   result <- quickQuery' conn query []
   return $ map unpack result
   where
     query = "select * from sport_univ_section order by id"
     unpack [SqlInteger uid, SqlByteString name, SqlInteger tid] =
-       (uid, BS.unpack name, tid)
+       Section uid (BS.unpack name) tid
     unpack x = error $ "Unexpected result: " ++ show x
 
 -- | update row in Sections by id
@@ -54,3 +56,14 @@ updateSection' uid name tid conn = do
   where
     query = "update sport_univ_section set name = ?, teacherId = ? " ++
             " where id = ?"
+
+-- | delete row in Section by id
+deleteSection :: IConnection a => Id -> a -> IO Bool
+deleteSection uid conn =
+    withTransaction conn (deleteSection' uid)
+
+deleteSection' uid conn = do
+  changed <- run conn query [SqlInteger uid]
+  return $ changed == 1
+  where
+    query = "delete from sport_univ_section where id = ?"
