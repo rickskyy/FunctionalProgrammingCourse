@@ -115,6 +115,7 @@
 	)
 )
 
+; sort list of vouchers in HolidayTrip object
 (defmethod sort-trip-by-duration ((trip HolidayTrip))
 	(setq trip-list (map 'list #'identity (holiday-vouchers trip)))
 
@@ -134,6 +135,7 @@
 	)
 )
 
+; sort only trips that were chosen by the user
 (defmethod choose-vouchers (vouchers)
 	(setf mytrip (make-instance 'HolidayTrip))
 	(print (length vouchers))
